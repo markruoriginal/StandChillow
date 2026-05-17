@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StandChillow — Download</title>
+    <style>
+        :root {
+            --bg-color: #030303;
+            --card-bg: rgba(15, 15, 15, 0.7);
+            --border-color: rgba(255, 255, 255, 0.06);
+            --text-main: #ffffff;
+            --text-muted: #8e8e93;
+            --accent: #6c5ce7;
+            --shadow: 0 40px 100px rgba(0, 0, 0, 0.9);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            justify-content: center;
+            align-items: center;
+            padding: 110px 24px 24px 24px;
+            background-image: radial-gradient(circle at 50% -20%, #131326 0%, #030303 70%);
+            position: relative;
+        }
+
+        /* Исправленный адаптивный баннер без рамок */
+        .promo-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(15, 15, 20, 0.97);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 16px 45px 16px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            z-index: 9999;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transform: translateY(-150%);
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .promo-banner.show {
+            transform: translateY(0);
+        }
+
+        .promo-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .promo-text {
+            font-size: 14px;
+            font-weight: 500;
+            color: #ffffff;
+            line-height: 1.4;
+        }
+
+        .promo-btn {
+            background: var(--accent);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: background 0.2s;
+            box-shadow: 0 0 15px rgba(108, 92, 231, 0.3);
+            flex-shrink: 0;
+        }
+
+        .promo-btn:hover { background: #5b4bc4; }
+
+        .promo-close-wrapper {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+        }
+
+        .promo-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .timer-text {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 600;
+            position: absolute;
+        }
+
+        /* ПОЛНОЭКРАННЫЙ БАННЕР */
+        .redirect-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(3, 3, 3, 0.98);
+            z-index: 10000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .redirect-overlay.active { display: flex; }
+        .redirect-card { padding: 20px; max-width: 400px; width: 100%; }
+        .redirect-title { font-size: 22px; font-weight: 700; margin-bottom: 12px; }
+        .redirect-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 32px; line-height: 1.6; }
+        .redirect-timer { font-size: 56px; font-weight: 800; color: var(--accent); margin-bottom: 32px; }
+        
+        .continue-btn {
+            display: none;
+            width: 100%;
+            padding: 16px;
+            background: #ffffff;
+            color: #000000;
+            text-decoration: none;
+            font-weight: 700;
+            border-radius: 14px;
+            font-size: 15px;
+            transition: transform 0.2s;
+        }
+        .continue-btn:hover { transform: scale(1.02); }
+
+        /* ВАШ ОРИГИНАЛЬНЫЙ ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКА (НЕ ТРОГАЛ) */
+        .lang-switch {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            display: flex;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 4px;
+            border-radius: 10px;
+            z-index: 100;
+        }
+
+        .lang-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 7px;
+            transition: all 0.2s ease;
+        }
+
+        .lang-btn.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+        }
+
+        /* Контентная зона */
+        .card {
+            background: transparent;
+            text-align: center;
+            max-width: 440px;
+            width: 100%;
+        }
+
+        .logo-container {
+            width: 96px;
+            height: 96px;
+            margin: 0 auto 24px;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .logo-container img { width: 100%; height: 100%; object-fit: cover; }
+        h1 { font-size: 36px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.8px; }
+        .subtitle { color: var(--text-muted); font-size: 14px; margin-bottom: 36px; line-height: 1.6; }
+
+        .platform-block { margin-bottom: 16px; text-align: left; }
+        .platform-trigger {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 18px 24px;
+            background: rgba(255, 255, 255, 0.04);
+            border: none;
+            border-radius: 16px;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .platform-trigger:hover { background: rgba(255, 255, 255, 0.08); }
+        .platform-trigger .left { display: flex; align-items: center; gap: 12px; }
+        .platform-trigger svg { width: 20px; height: 20px; fill: currentColor; }
+        .arrow { font-size: 12px; color: var(--text-muted); transition: transform 0.2s ease; }
+
+        .dropdown-links {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 0 4px;
+        }
+
+        .platform-block.active .dropdown-links { max-height: 120px; margin-top: 8px; }
+        .platform-block.active .arrow { transform: rotate(90deg); }
+
+        .dl-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border: none;
+            border-radius: 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .dl-link:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.05); }
+
+        .orig-link-wrapper { margin-top: 32px; margin-bottom: 8px; }
+        .orig-text-link { color: var(--text-muted); text-decoration: none; font-size: 13px; font-weight: 500; }
+        .orig-text-link:hover { color: var(--text-main); text-decoration: underline; }
+        footer { margin-top: 48px; font-size: 11px; color: rgba(255, 255, 255, 0.2); }
+
+        /* Мобильная адаптация верхнего баннера */
+        @media (max-width: 480px) {
+            .promo-banner { padding: 12px 40px 12px 12px; }
+            .promo-content { flex-direction: column; gap: 8px; text-align: center; }
+            .promo-btn { width: 100%; text-align: center; padding: 6px 12px; }
+            body { padding-top: 150px; }
+        }
+
+        [data-lang="en"] { display: none; }
+        html[lang="en"] [data-lang="ru"] { display: none; }
+        html[lang="en"] [data-lang="en"] { display: block; }
+    </style>
+</head>
+<body>
+
+    <!-- ВЕРХНИЙ БАННЕР -->
+    <div id="promoBanner" class="promo-banner">
+        <div class="promo-content">
+            <span class="promo-text" data-lang="ru">Подписывайся на наш Telegram канал!</span>
+            <span class="promo-text" data-lang="en">Subscribe to our Telegram channel!</span>
+            
+            <a href="https://t.me/Marksine2015" target="_blank" class="promo-btn" data-lang="ru">Давай!</a>
+            <a href="https://t.me/Marksine2015" target="_blank" class="promo-btn" data-lang="en">Let's Go!</a>
+        </div>
+        
+        <div class="promo-close-wrapper">
+            <span id="timerText" class="timer-text">5</span>
+            <button id="closeBtn" class="promo-close" onclick="closeBanner()" style="display: none;">&times;</button>
+        </div>
+    </div>
+
+    <!-- ПОЛНОЭКРАННЫЙ БАННЕР -->
+    <div id="redirectOverlay" class="redirect-overlay">
+        <div class="redirect-card">
+            <div class="redirect-title" data-lang="ru">Подождите, идёт подготовка файла...</div>
+            <div class="redirect-title" data-lang="en">Please wait, preparing your file...</div>
+            
+            <div class="redirect-subtitle" data-lang="ru">Пока файл собирается, подпишитесь на наш Telegram (не CHILLOW) https://t.me/Marksine2015</div>
+            <div class="redirect-subtitle" data-lang="en">While the file is building, join our Telegram (no CHILLOW) https://t.me/Marksine2015</div>
+            
+            <div id="redirectTimer" class="redirect-timer">5</div>
+            
+            <a href="#" id="finalDownloadBtn" target="_blank" class="continue-btn" data-lang="ru">Продолжить скачивание</a>
+            <a href="#" id="finalDownloadBtnEn" target="_blank" class="continue-btn" data-lang="en">Continue Download</a>
+        </div>
+    </div>
+
+    <!-- ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКА -->
+    <div class="lang-switch">
+        <button class="lang-btn active" onclick="setLang('ru')">RU</button>
+        <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+
+    <div class="card">
+        <div class="logo-container">
+            <img src="logo.jpg" alt="Logo" onerror="this.style.display='none'; this.parentNode.innerText='CHILLOW'">
+        </div>
+
+        <h1>StandChillow</h1>
+        <p class="subtitle" data-lang="ru">Приватный сервер standoff 2 нового поколения. Стабильный геймплей и кастомный контент.</p>
+        <p class="subtitle" data-lang="en">Next-gen private server standoff 2. Stable gameplay and unique custom content.</p>
+
+        <!-- ANDROID -->
+        <div class="platform-block">
+            <button class="platform-trigger" onclick="toggleBlock(this)">
+                <div class="left">
+                    <svg viewBox="0 0 24 24"><path d="M17.52 2.48L19.14.86c.2-.2.51-.2.71 0s.2.51 0 .71l-1.77 1.77c1.7 1.5 2.8 3.66 2.91 6.13H3.01c.1-2.47 1.2-4.63 2.91-6.13L4.15 1.57c-.2-.2-.2-.51 0-.71s.51-.2.71 0l1.62 1.62C8.2 1.51 10.02 1 12 1s3.8.51 5.52 1.48zM7 6c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1zm10 0c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1zM2 11h20v8c0 1.66-1.34 3-3 3H5c-1.66 0-3-1.34-3-3v-8z"/></svg>
+                    <span>Android (APK)</span>
+                </div>
+                <span class="arrow">▶</span>
+            </button>
+            <div class="dropdown-links">
+                <div onclick="startRedirect('https://t.me/chillow')" class="dl-link">
+                    <span>Telegram Channel</span> <span>➔</span>
+                </div>
+                <div onclick="startRedirect('https://www.mediafire.com/file/xykx20wmfaptjtd/2.05_OBT.apk/file')" class="dl-link">
+                    <span>MediaFire</span> <span>➔</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- WINDOWS -->
+        <div class="platform-block">
+            <button class="platform-trigger" onclick="toggleBlock(this)">
+                <div class="left">
+                    <svg viewBox="0 0 24 24"><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/></svg>
+                    <span>Windows (EXE/ZIP)</span>
+                </div>
+                <span class="arrow">▶</span>
+            </button>
+            <div class="dropdown-links">
+                <div onclick="startRedirect('https://t.me/chillow')" class="dl-link">
+                    <span>Telegram Chanel</span> <span>➔</span>
+                </div>
+                <div onclick="startRedirect('https://www.mediafire.com/file/tsa3gyh2nidpmwt/2.05_OBT.zip/file')" class="dl-link">
+                    <span>MediaFire</span> <span>➔</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ОРИГИНАЛ -->
+        <div class="orig-link-wrapper">
+            <div onclick='https://mirrox822-crypto.github.io/public/update205/index')" class="orig-text-link" style="cursor:pointer;" data-lang="ru">Оригинальный сайт StandChillow Project</div>
+            <div onclick="startRedirect('https://mirrox822-crypto.github.io/public/update205/index')" class="orig-text-link" style="cursor:pointer;" data-lang="en">Original StandChillow Project Website</div>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2026 StandChillow Copying Website - Сделано Марком.
+    </footer>
+
+    <script>
+        setTimeout(() => {
+            const banner = document.getElementById('promoBanner');
+            if(banner) {
+                banner.classList.add('show');
+                startTopBannerTimer();
+            }
+        }, 3000);
+
+        function startTopBannerTimer() {
+            const timerText = document.getElementById('timerText');
+            const closeBtn = document.getElementById('closeBtn');
+            let topTime = 5;
+            
+            let topInterval = setInterval(() => {
+                topTime--;
+                if(timerText) timerText.innerText = topTime;
+                if (topTime <= 0) {
+                    clearInterval(topInterval);
+                    if(timerText) timerText.style.display = 'none';
+                    if(closeBtn) closeBtn.style.display = 'flex';
+                    closeBanner();
+                }
+            }, 1000);
+        }
+
+        function closeBanner() {
+            const banner = document.getElementById('promoBanner');
+            if(banner) banner.classList.remove('show');
+        }
+
+        function startRedirect(targetUrl) {
+            const overlay = document.getElementById('redirectOverlay');
+            const timerDisplay = document.getElementById('redirectTimer');
+            const btnRu = document.getElementById('finalDownloadBtn');
+            const btnEn = document.getElementById('finalDownloadBtnEn');
+            
+            btnRu.href = targetUrl;
+            btnEn.href = targetUrl;
+            
+            let count = 5;
+            timerDisplay.innerText = count;
+            timerDisplay.style.display = 'block';
+            btnRu.style.display = 'none';
+            btnEn.style.display = 'none';
+            
+            overlay.classList.add('active');
+            
+            let redirectInterval = setInterval(() => {
+                count--;
+                timerDisplay.innerText = count;
+                
+                if(count <= 0) {
+                    clearInterval(redirectInterval);
+                    timerDisplay.style.display = 'none';
+                    btnRu.style.display = 'block';
+                    btnEn.style.display = 'block';
+                    
+                    const hideOverlay = () => {
+                        overlay.classList.remove('active');
+                        btnRu.removeEventListener('click', hideOverlay);
+                        btnEn.removeEventListener('click', hideOverlay);
+                    };
+                    btnRu.addEventListener('click', hideOverlay);
+                    btnEn.addEventListener('click', hideOverlay);
+                }
+            }, 1000);
+        }
+
+        function toggleBlock(button) {
+            const block = button.parentElement;
+            block.classList.toggle('active');
+        }
+
+        function setLang(lang) {
+            document.documentElement.setAttribute('lang', lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if(btn.innerText.toLowerCase() === lang) btn.classList.add('active');
+            });
+        }
+    </script>
+</body>
+</html>
